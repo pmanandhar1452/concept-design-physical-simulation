@@ -82,7 +82,7 @@ I've upgraded the physics backend. The original implementation used a simple pat
 What I changed:
 - I replaced the simple 2-body solver in `api/simulations/engine.py` with a full n-body numerical integrator using libraries like `Poliastro` or `SPICEyPy`.
 - The simulation now accounts for the gravitational pull of all major planets and the Sun when propagating the spacecraft's state vector (`position`, `velocity`).
-- The WebSocket payload in `syncs/websocket_handler.py` was updated to transmit these higher-fidelity state vectors for the spacecraft.
+- The WebSocket payload in `api/main.py` was updated to transmit these higher-fidelity state vectors for the spacecraft.
 
 Impact:
 The trajectories calculated and displayed are now significantly more accurate, reflecting the complex gravitational environment of the solar system.
@@ -94,8 +94,8 @@ Response:
 I've enhanced the Trajectory Planner to provide a more comprehensive overview of the launch opportunities.
 
 What I changed:
-- The backend function in `physics/planner.py` no longer returns a single date. It now generates data for a **Porkchop Plot**. This plot visualizes key metrics (like C₃ energy and travel time) across a 2D grid of departure and arrival dates.
-- The frontend in `frontend/planner.js` now renders this data as an interactive contour plot. Colors or contour lines represent the required launch energy.
+- The backend function in `api/simulations/engine.py` no longer returns a single date. It now generates data for a **Porkchop Plot**. This plot visualizes key metrics (like C₃ energy and travel time) across a 2D grid of departure and arrival dates.
+- The frontend in `client/src/views/Simulator.js` now renders this data as an interactive contour plot. Colors or contour lines represent the required launch energy.
 - Users can click anywhere on the Porkchop Plot to select a specific departure/arrival date combination, and the UI will update with the corresponding travel time and energy requirements.
 
 Impact:
@@ -108,9 +108,9 @@ Response:
 I've optimized the simulation loop to ensure a smooth frontend experience without sacrificing physics accuracy.
 
 What I changed:
-- **Backend (`physics/engine.py`):** The backend now pre-calculates planetary positions for a long duration (e.g., several years) using a high-precision ephemeris model. This data is sent to the frontend as a large, one-time package upon connection. The expensive n-body integration is now only performed for the active spacecraft, not for the planets on every tick.
-- **Frontend (`frontend/main.js`):** The frontend stores the pre-calculated planetary ephemerides. It uses interpolation to calculate the positions of planets between frames, resulting in perfectly smooth orbits. It only relies on the WebSocket stream for the state vector of the spacecraft.
-- **Sync (`syncs/websocket_handler.py`):** The WebSocket no longer streams all planetary positions every few milliseconds. It sends the ephemeris data once, and then only provides a high-frequency stream for the spacecraft's data.
+- **Backend (`api/simulations/engine.py`):** The backend now pre-calculates planetary positions for a long duration (e.g., several years) using a high-precision ephemeris model. This data is sent to the frontend as a large, one-time package upon connection. The expensive n-body integration is now only performed for the active spacecraft, not for the planets on every tick.
+- **Frontend (`client/src/views/Simulator.jsx`):** The frontend stores the pre-calculated planetary ephemerides. It uses interpolation to calculate the positions of planets between frames, resulting in perfectly smooth orbits. It only relies on the WebSocket stream for the state vector of the spacecraft.
+- **Sync (`api/main.py`):** The WebSocket no longer streams all planetary positions every few milliseconds. It sends the ephemeris data once, and then only provides a high-frequency stream for the spacecraft's data.
 
 Impact:
 The frontend animation is now decoupled from the backend's heavy computation, ensuring a smooth 60 FPS visualization, while the spacecraft's trajectory remains physically accurate.
