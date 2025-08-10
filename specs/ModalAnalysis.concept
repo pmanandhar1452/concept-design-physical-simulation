@@ -1,0 +1,76 @@
+<concept_spec>
+
+concept ModalAnalysis
+
+purpose
+    to perform finite element modal analysis on tuning fork objects and manage the resulting modal data
+
+state
+    a set of Analyses with
+        a analysis_id String
+        a tuning_fork TuningForks
+        a num_modes Integer
+        a status String
+        a progress Float
+        a created_at Timestamp
+        a completed_at Timestamp
+    
+    a set of Modes with
+        a mode_id String
+        a analysis_id String
+        a mode_number Integer
+        a frequency Float
+        a displacement_field Vector3Array
+        a stress_field Vector3Array
+        a strain_field Vector3Array
+        a mesh_vertices Vector3Array
+        a mesh_elements IntegerArray
+
+actions
+    start_analysis (analysis: Analyses, tuning_fork: TuningForks, num_modes: Integer) : (analysis: Analyses)
+        initiate a new modal analysis for the specified tuning fork
+        set status to "calculating" and progress to 0.0
+        set created_at to current timestamp
+        return the analysis reference
+    
+    update_progress (analysis: Analyses, progress: Float) : (analysis: Analyses)
+        update the calculation progress (0.0 to 1.0)
+        return the analysis reference
+    
+    complete_analysis (analysis: Analyses, modes: ModesArray) : (analysis: Analyses)
+        mark the analysis as complete with the calculated modal results
+        set status to "completed" and progress to 1.0
+        set completed_at to current timestamp
+        associate all mode data with the analysis
+        return the analysis reference
+    
+    fail_analysis (analysis: Analyses, error_message: String) : (analysis: Analyses)
+        mark the analysis as failed
+        set status to "failed"
+        return the analysis reference
+    
+    get_analysis_status (analysis: Analyses) : (status: String, progress: Float, num_modes: Integer)
+        retrieve the current status and progress of the analysis
+        return status, progress, and number of modes requested
+    
+    get_mode_data (analysis: Analyses, mode_number: Integer) : (frequency: Float, displacement_field: Vector3Array, mesh_vertices: Vector3Array, mesh_elements: IntegerArray)
+        retrieve the modal data for a specific mode number
+        return frequency, displacement field, and mesh data
+    get_mode_data (analysis: Analyses, mode_number: Integer) : (error: String)
+        if the mode number is invalid or analysis is not complete
+        return error message
+    
+    get_all_modes (analysis: Analyses) : (modes: ModesArray)
+        retrieve all modal data for the completed analysis
+        return array of all calculated modes
+    get_all_modes (analysis: Analyses) : (error: String)
+        if analysis is not complete
+        return error message
+
+operational principle
+    after start_analysis (analysis: analysis1, tuning_fork: fork1, num_modes: 5) : (analysis: analysis1)
+    and update_progress (analysis: analysis1, progress: 0.5) : (analysis: analysis1)
+    and complete_analysis (analysis: analysis1, modes: [mode1, mode2, ...]) : (analysis: analysis1)
+    then get_analysis_status (analysis: analysis1) returns status "completed" and progress 1.0
+
+</concept_spec>

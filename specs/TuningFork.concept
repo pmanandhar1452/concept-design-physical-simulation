@@ -1,0 +1,58 @@
+<concept_spec>
+
+concept TuningFork
+
+purpose
+    to represent a tuning fork object with configurable dimensions and material properties for modal analysis
+
+state
+    a set of TuningForks with
+        a name String
+        a length Float
+        a width Float
+        a thickness Float
+        a handle_length Float
+        a handle_width Float
+        a material String
+        a density Float
+        a youngs_modulus Float
+        a poissons_ratio Float
+        a mesh_resolution Integer
+        a created_at Timestamp
+
+actions
+    create (tuning_fork: TuningForks, name: String, length: Float, width: Float, thickness: Float, handle_length: Float, handle_width: Float, material: String, density: Float, youngs_modulus: Float, poissons_ratio: Float, mesh_resolution: Integer) : (tuning_fork: TuningForks)
+        create a new tuning fork with the specified geometric and material properties
+        associate all properties with the tuning fork
+        set created_at to current timestamp
+        return the tuning fork reference
+    
+    update_dimensions (tuning_fork: TuningForks, length: Float, width: Float, thickness: Float, handle_length: Float, handle_width: Float) : (tuning_fork: TuningForks)
+        update the geometric dimensions of the tuning fork
+        return the tuning fork reference
+    
+    update_material (tuning_fork: TuningForks, material: String, density: Float, youngs_modulus: Float, poissons_ratio: Float) : (tuning_fork: TuningForks)
+        update the material properties of the tuning fork
+        return the tuning fork reference
+    
+    update_mesh_resolution (tuning_fork: TuningForks, mesh_resolution: Integer) : (tuning_fork: TuningForks)
+        update the mesh resolution for finite element analysis
+        return the tuning fork reference
+    
+    get_properties (tuning_fork: TuningForks) : (length: Float, width: Float, thickness: Float, handle_length: Float, handle_width: Float, material: String, density: Float, youngs_modulus: Float, poissons_ratio: Float, mesh_resolution: Integer)
+        retrieve all properties of the tuning fork
+        return all geometric and material properties
+    
+    get_by_name (name: String) : (tuning_fork: TuningForks)
+        find a tuning fork by its name
+        return the tuning fork reference
+    get_by_name (name: String) : (error: String)
+        if no tuning fork with that name exists
+        return error message
+
+operational principle
+    after create (tuning_fork: fork1, name: "Standard Fork", length: 0.1, ...) : (tuning_fork: fork1)
+    and update_dimensions (tuning_fork: fork1, length: 0.12, ...) : (tuning_fork: fork1)
+    then get_properties (tuning_fork: fork1) returns the updated length of 0.12
+
+</concept_spec>

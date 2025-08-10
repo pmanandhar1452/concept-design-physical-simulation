@@ -21,6 +21,7 @@ A real-time solar system simulator with interplanetary trajectory planning capab
 
 ### Frontend (React + Three.js)
 - **3D Visualization**: Solar system rendered with Three.js/React Three Fiber
+- **Physics Panel**: Select different physics engines (currently Orbital Mechanics)
 - **Control Panels**: Time controls, body information, mission status
 - **Trajectory Planner**: Interactive interface for mission planning
 - **WebSocket Client**: Receives real-time simulation updates
@@ -65,6 +66,7 @@ Open your browser and navigate to `http://localhost:5173`
 - **Click Planet**: Select and focus on a celestial body
 - **Play/Pause**: Control simulation time
 - **Speed**: Adjust time acceleration (1x to 1M x)
+- **Physics Panel**: Select physics engine (currently Orbital Mechanics)
 
 ### Mission Planning
 1. Click "Plan Mission" button
@@ -114,6 +116,7 @@ The application is built using concept design principles with the following core
 
 ## Future Enhancements
 
+- **Additional Physics Engines**: Fluid dynamics, particle systems, rigid body dynamics
 - N-body physics simulation for more accurate trajectories
 - Additional celestial bodies (moons, asteroids)
 - Gravity assists and complex trajectories

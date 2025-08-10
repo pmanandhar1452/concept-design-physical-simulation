@@ -3,7 +3,7 @@
 concept Simulation
 
 purpose
-    to control the flow of time and manage simulation state
+    to control the flow of time and manage simulation state for both orbital mechanics and modal analysis
 
 state
     a set of Simulations with
@@ -12,6 +12,9 @@ state
         a is_playing Boolean
         a start_time Float
         a end_time Float
+        a simulation_type String
+        a current_mode Integer
+        a animation_phase Float
 
 actions
     create (sim: Simulations, start_time: Float, end_time: Float) : (sim: Simulations)
@@ -43,8 +46,20 @@ actions
         ensure time is within start_time and end_time bounds
         return the simulation reference
     
-    get_time (sim: Simulations) : (time: Float, scale: Float, is_playing: Boolean)
-        return current time, scale, and playing state
+    set_simulation_type (sim: Simulations, sim_type: String) : (sim: Simulations)
+        set the simulation type (orbital_mechanics or modal_analysis)
+        return the simulation reference
+    
+    set_current_mode (sim: Simulations, mode: Integer) : (sim: Simulations)
+        set the current mode for modal analysis animation
+        return the simulation reference
+    
+    update_animation_phase (sim: Simulations, phase: Float) : (sim: Simulations)
+        update the animation phase for modal analysis (0.0 to 2π)
+        return the simulation reference
+    
+    get_time (sim: Simulations) : (time: Float, scale: Float, is_playing: Boolean, sim_type: String, current_mode: Integer, animation_phase: Float)
+        return current time, scale, playing state, simulation type, current mode, and animation phase
 
 operational principle
     after create (sim: s, start_time: 0, end_time: 3600) : (sim: s)
