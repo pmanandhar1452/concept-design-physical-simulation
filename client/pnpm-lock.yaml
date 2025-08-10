@@ -47,12 +47,18 @@ importers:
       '@takram/three-geospatial':
         specifier: ^0.2.0
         version: 0.2.2(@react-three/fiber@8.18.0(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.161.0))(react@18.3.1)(three@0.161.0)
+      autoprefixer:
+        specifier: ^10.4.21
+        version: 10.4.21(postcss@8.5.6)
       cesium:
         specifier: ^1.111.0
         version: 1.131.0
       chart.js:
         specifier: ^4.4.0
         version: 4.5.0
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       deck.gl:
         specifier: ^9.0.0
         version: 9.1.14(@arcgis/core@4.33.11)(@luma.gl/shadertools@9.1.9(@luma.gl/core@9.1.9))(@luma.gl/webgl@9.1.9(@luma.gl/core@9.1.9))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -101,9 +107,15 @@ importers:
       styled-components:
         specifier: ^5.3.11
         version: 5.3.11(@babel/core@7.27.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       three:
         specifier: ^0.161.0
         version: 0.161.0
+      zustand:
+        specifier: ^5.0.7
+        version: 5.0.7(@types/react@19.1.8)(immer@9.0.21)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1))
     devDependencies:
       '@vitejs/plugin-react':
         specifier: ^4.0.0
@@ -1361,6 +1373,13 @@ packages:
     resolution: {integrity: sha512-vEfYZPmvVOIuE567XBVCsx8SBgOYtjB2+S1iAaJ+HgH+DNjAcrHem2hmAeC9yaNGWayicv4yR+9UaJlkF3pvtw==}
     engines: {pnpm: '>=10.10.0'}
 
+  autoprefixer@10.4.21:
+    resolution: {integrity: sha512-O+A6LWV5LDHSJD3LjHYoNi4VLsj/Whi7k6zG12xTYaU4cQ8oxQGckXNX8cRHK5yOZ/ppVHe0ZBXGzSV9jXdVbQ==}
+    engines: {node: ^10 || ^12 || >=14}
+    hasBin: true
+    peerDependencies:
+      postcss: ^8.1.0
+
   babel-plugin-styled-components@2.1.4:
     resolution: {integrity: sha512-Xgp9g+A/cG47sUyRwwYxGM4bR/jDRg5N6it/8+HxCnbT5XNKSKDT9xm4oag/osgqjC2It/vH0yXsomOG6k558g==}
     peerDependencies:
@@ -1552,6 +1571,9 @@ packages:
     resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
     engines: {node: '>= 12'}
 
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
@@ -1696,6 +1718,9 @@ packages:
   formdata-polyfill@4.0.10:
     resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
     engines: {node: '>=12.20.0'}
+
+  fraction.js@4.3.7:
+    resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
   fs-extra@11.3.0:
     resolution: {integrity: sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==}
@@ -2061,6 +2086,10 @@ packages:
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
+
+  normalize-range@0.1.2:
+    resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
+    engines: {node: '>=0.10.0'}
 
   nosleep.js@0.12.0:
     resolution: {integrity: sha512-9d1HbpKLh3sdWlhXMhU6MMH+wQzKkrgfRkYV0EBdvt99YJfj0ilCJrWRDYG2130Tm4GXbEoTCx5b34JSaP+HhA==}
@@ -2463,6 +2492,9 @@ packages:
   tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
 
+  tailwindcss@4.1.11:
+    resolution: {integrity: sha512-2E9TBm6MDD/xKYe+dvJZAmg3yxIEDNRc0jwlNyDg/4Fil2QcSLjFKGVff0lAf1jjeaArlG/M75Ey/EYr/OJtBA==}
+
   tapable@2.2.2:
     resolution: {integrity: sha512-Re10+NauLTMCudc7T5WLFLAwDhQ0JWdrMK+9B2M8zR5hRExKmsRDCBA7/aV/pNJFltmBFO5BAMlQFi/vq3nKOg==}
     engines: {node: '>=6'}
@@ -2679,8 +2711,8 @@ packages:
       react:
         optional: true
 
-  zustand@5.0.6:
-    resolution: {integrity: sha512-ihAqNeUVhe0MAD+X8M5UzqyZ9k3FFZLBTtqo6JLPwV53cbRB/mJwBI0PxcIgqhBBHlEs8G45OTDTMq3gNcLq3A==}
+  zustand@5.0.7:
+    resolution: {integrity: sha512-Ot6uqHDW/O2VdYsKLLU8GQu8sCOM1LcoE8RwvLv9uuRT9s6SOHCKs0ZEOhxg+I1Ld+A1Q5lwx+UlKXXUoCZITg==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=18.0.0'
@@ -3702,7 +3734,7 @@ snapshots:
       troika-three-text: 0.52.4(three@0.161.0)
       tunnel-rat: 0.1.2(@types/react@19.1.8)(immer@9.0.21)(react@18.3.1)
       utility-types: 3.11.0
-      zustand: 5.0.6(@types/react@19.1.8)(immer@9.0.21)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1))
+      zustand: 5.0.7(@types/react@19.1.8)(immer@9.0.21)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1))
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
     transitivePeerDependencies:
@@ -4288,6 +4320,16 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  autoprefixer@10.4.21(postcss@8.5.6):
+    dependencies:
+      browserslist: 4.25.1
+      caniuse-lite: 1.0.30001726
+      fraction.js: 4.3.7
+      normalize-range: 0.1.2
+      picocolors: 1.1.1
+      postcss: 8.5.6
+      postcss-value-parser: 4.2.0
+
   babel-plugin-styled-components@2.1.4(@babel/core@7.27.7)(styled-components@5.3.11(@babel/core@7.27.7)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1))(supports-color@5.5.0):
     dependencies:
       '@babel/helper-annotate-as-pure': 7.27.3
@@ -4474,6 +4516,8 @@ snapshots:
 
   data-uri-to-buffer@4.0.1: {}
 
+  date-fns@4.1.0: {}
+
   dayjs@1.11.13: {}
 
   debug@4.4.1(supports-color@5.5.0):
@@ -4646,6 +4690,8 @@ snapshots:
   formdata-polyfill@4.0.10:
     dependencies:
       fetch-blob: 3.2.0
+
+  fraction.js@4.3.7: {}
 
   fs-extra@11.3.0:
     dependencies:
@@ -5014,6 +5060,8 @@ snapshots:
       formdata-polyfill: 4.0.10
 
   node-releases@2.0.19: {}
+
+  normalize-range@0.1.2: {}
 
   nosleep.js@0.12.0: {}
 
@@ -5425,6 +5473,8 @@ snapshots:
 
   tabbable@6.2.0: {}
 
+  tailwindcss@4.1.11: {}
+
   tapable@2.2.2: {}
 
   terser@5.43.1:
@@ -5605,7 +5655,7 @@ snapshots:
       immer: 9.0.21
       react: 18.3.1
 
-  zustand@5.0.6(@types/react@19.1.8)(immer@9.0.21)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1)):
+  zustand@5.0.7(@types/react@19.1.8)(immer@9.0.21)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1)):
     optionalDependencies:
       '@types/react': 19.1.8
       immer: 9.0.21
