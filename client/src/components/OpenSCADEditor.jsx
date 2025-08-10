@@ -430,11 +430,20 @@ cylinder(h = 50, r = 10);`;
               folding: true,
               lineDecorationsWidth: 10,
               lineNumbersMinChars: 3,
+              suggestOnTriggerCharacters: true,
+              quickSuggestions: true,
+              acceptSuggestionOnEnter: "on",
+              tabCompletion: "on",
+              bracketPairColorization: { enabled: true },
+              guides: {
+                bracketPairs: true,
+                indentation: true,
+              },
             }}
             beforeMount={(monaco) => {
               // Define OpenSCAD language
               monaco.languages.register({ id: "openscad" });
-              
+
               // Add OpenSCAD completion provider
               monaco.languages.registerCompletionItemProvider("openscad", {
                 provideCompletionItems: (model, position) => {
@@ -443,111 +452,241 @@ cylinder(h = 50, r = 10);`;
                       label: "cylinder",
                       kind: monaco.languages.CompletionItemKind.Function,
                       insertText: "cylinder(h = ${1:height}, r = ${2:radius});",
-                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                      documentation: "Create a cylinder with height and radius"
+                      insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule
+                          .InsertAsSnippet,
+                      documentation: "Create a cylinder with height and radius",
                     },
                     {
                       label: "translate",
                       kind: monaco.languages.CompletionItemKind.Function,
                       insertText: "translate([${1:x}, ${2:y}, ${3:z}])",
-                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                      documentation: "Translate object by vector"
+                      insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule
+                          .InsertAsSnippet,
+                      documentation: "Translate object by vector",
                     },
                     {
                       label: "rotate",
                       kind: monaco.languages.CompletionItemKind.Function,
                       insertText: "rotate([${1:x}, ${2:y}, ${3:z}])",
-                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                      documentation: "Rotate object around axes"
+                      insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule
+                          .InsertAsSnippet,
+                      documentation: "Rotate object around axes",
                     },
                     {
                       label: "union",
                       kind: monaco.languages.CompletionItemKind.Function,
                       insertText: "union() {\n\t${1:// objects}\n}",
-                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                      documentation: "Union of multiple objects"
+                      insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule
+                          .InsertAsSnippet,
+                      documentation: "Union of multiple objects",
                     },
                     {
                       label: "sphere",
                       kind: monaco.languages.CompletionItemKind.Function,
                       insertText: "sphere(r = ${1:radius});",
-                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                      documentation: "Create a sphere with radius"
+                      insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule
+                          .InsertAsSnippet,
+                      documentation: "Create a sphere with radius",
                     },
                     {
                       label: "cube",
                       kind: monaco.languages.CompletionItemKind.Function,
-                      insertText: "cube([${1:width}, ${2:height}, ${3:depth}]);",
-                      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                      documentation: "Create a cube with dimensions"
-                    }
+                      insertText:
+                        "cube([${1:width}, ${2:height}, ${3:depth}]);",
+                      insertTextRules:
+                        monaco.languages.CompletionItemInsertTextRule
+                          .InsertAsSnippet,
+                      documentation: "Create a cube with dimensions",
+                    },
                   ];
                   return { suggestions };
-                }
+                },
               });
-              
+
               monaco.languages.setMonarchTokensProvider("openscad", {
                 keywords: [
-                  "module", "function", "if", "else", "for", "let", "each", "true", "false", "undef",
-                  "union", "difference", "intersection", "translate", "rotate", "scale", "mirror",
-                  "multmatrix", "color", "offset", "hull", "minkowski", "resize", "cylinder", "sphere",
-                  "cube", "polyhedron", "square", "circle", "polygon", "text", "surface", "projection",
-                  "linear_extrude", "rotate_extrude", "import", "use", "include"
+                  "module",
+                  "function",
+                  "if",
+                  "else",
+                  "for",
+                  "let",
+                  "each",
+                  "true",
+                  "false",
+                  "undef",
+                  "union",
+                  "difference",
+                  "intersection",
+                  "translate",
+                  "rotate",
+                  "scale",
+                  "mirror",
+                  "multmatrix",
+                  "color",
+                  "offset",
+                  "hull",
+                  "minkowski",
+                  "resize",
+                  "cylinder",
+                  "sphere",
+                  "cube",
+                  "polyhedron",
+                  "square",
+                  "circle",
+                  "polygon",
+                  "text",
+                  "surface",
+                  "projection",
+                  "linear_extrude",
+                  "rotate_extrude",
+                  "import",
+                  "use",
+                  "include",
                 ],
                 operators: [
-                  "=", "+", "-", "*", "/", "%", "!", "&", "|", "^", "~", "<", ">", "?", ":", "==", "!=", "<=", ">=", "&&", "||", "++", "--", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<", ">>", ">>>", "<<=", ">>=", ">>>="
+                  "=",
+                  "+",
+                  "-",
+                  "*",
+                  "/",
+                  "%",
+                  "!",
+                  "&",
+                  "|",
+                  "^",
+                  "~",
+                  "<",
+                  ">",
+                  "?",
+                  ":",
+                  "==",
+                  "!=",
+                  "<=",
+                  ">=",
+                  "&&",
+                  "||",
+                  "++",
+                  "--",
+                  "+=",
+                  "-=",
+                  "*=",
+                  "/=",
+                  "%=",
+                  "&=",
+                  "|=",
+                  "^=",
+                  "<<",
+                  ">>",
+                  ">>>",
+                  "<<=",
+                  ">>=",
+                  ">>>=",
                 ],
                 symbols: /[=><!~?:&|+\-*\/\^%]+/,
                 tokenizer: {
                   root: [
-                    [/[a-z_$][\w$]*/, {
-                      cases: {
-                        "@keywords": "keyword",
-                        "@default": "identifier"
-                      }
-                    }],
+                    [
+                      /[a-z_$][\w$]*/,
+                      {
+                        cases: {
+                          "@keywords": "keyword",
+                          "@default": "identifier",
+                        },
+                      },
+                    ],
                     [/[A-Z][\w\$]*/, "type.identifier"],
                     { include: "@whitespace" },
                     [/[{}()\[\]]/, "@brackets"],
                     [/[<>](?!@symbols)/, "@brackets"],
-                    [/@symbols/, {
-                      cases: {
-                        "@operators": "operator",
-                        "@default": ""
-                      }
-                    }],
+                    [
+                      /@symbols/,
+                      {
+                        cases: {
+                          "@operators": "operator",
+                          "@default": "",
+                        },
+                      },
+                    ],
                     [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
                     [/\d+/, "number"],
                     [/[;,.]/, "delimiter"],
                     [/"([^"\\]|\\.)*$/, "string.invalid"],
-                    [/"/, { token: "string.quote", bracket: "@open", next: "@string" }],
+                    [
+                      /"/,
+                      {
+                        token: "string.quote",
+                        bracket: "@open",
+                        next: "@string",
+                      },
+                    ],
                     [/'([^'\\]|\\.)*$/, "string.invalid"],
-                    [/'/, { token: "string.quote", bracket: "@open", next: "@string_single" }],
-                    [/`/, { token: "string.quote", bracket: "@open", next: "@string_backtick" }]
+                    [
+                      /'/,
+                      {
+                        token: "string.quote",
+                        bracket: "@open",
+                        next: "@string_single",
+                      },
+                    ],
+                    [
+                      /`/,
+                      {
+                        token: "string.quote",
+                        bracket: "@open",
+                        next: "@string_backtick",
+                      },
+                    ],
                   ],
                   whitespace: [
                     [/[ \t\r\n]+/, "white"],
                     [/\/\*/, "comment", "@comment"],
-                    [/\/\/.*$/, "comment"]
+                    [/\/\/.*$/, "comment"],
                   ],
                   comment: [
                     [/[^\/*]+/, "comment"],
                     [/\*\//, "comment", "@pop"],
-                    [/[\/*]/, "comment"]
+                    [/[\/*]/, "comment"],
                   ],
                   string: [
                     [/[^\\"]+/, "string"],
-                    [/"/, { token: "string.quote", bracket: "@close", next: "@pop" }]
+                    [
+                      /"/,
+                      {
+                        token: "string.quote",
+                        bracket: "@close",
+                        next: "@pop",
+                      },
+                    ],
                   ],
                   string_single: [
                     [/[^\\']+/, "string"],
-                    [/'/, { token: "string.quote", bracket: "@close", next: "@pop" }]
+                    [
+                      /'/,
+                      {
+                        token: "string.quote",
+                        bracket: "@close",
+                        next: "@pop",
+                      },
+                    ],
                   ],
                   string_backtick: [
                     [/[^\\`]+/, "string"],
-                    [/`/, { token: "string.quote", bracket: "@close", next: "@pop" }]
-                  ]
-                }
+                    [
+                      /`/,
+                      {
+                        token: "string.quote",
+                        bracket: "@close",
+                        next: "@pop",
+                      },
+                    ],
+                  ],
+                },
               });
             }}
           />
