@@ -14,6 +14,11 @@ function PorkchopPlot({ data, onSelectPoint }) {
     const deltaV = data.delta_v[i][j];
     const tof = data.time_of_flight[i][j];
     
+    // Don't select invalid transfers
+    if (c3 == null || deltaV == null || tof == null) {
+      return;
+    }
+    
     setSelectedPoint({ i, j });
     onSelectPoint({
       departure_date: depDate,
@@ -25,12 +30,12 @@ function PorkchopPlot({ data, onSelectPoint }) {
   };
   
   // Find min and max values for color scaling
-  const flatC3 = data.c3.flat().filter(v => !isNaN(v));
-  const minC3 = Math.min(...flatC3);
-  const maxC3 = Math.max(...flatC3);
+  const flatC3 = data.c3.flat().filter(v => v != null && !isNaN(v));
+  const minC3 = flatC3.length > 0 ? Math.min(...flatC3) : 0;
+  const maxC3 = flatC3.length > 0 ? Math.max(...flatC3) : 100;
   
   const getColor = (value) => {
-    if (isNaN(value)) return '#333333';
+    if (value == null || isNaN(value)) return '#333333';
     const normalized = (value - minC3) / (maxC3 - minC3);
     // Blue (low) to Red (high) gradient
     const r = Math.floor(normalized * 255);
@@ -60,7 +65,7 @@ function PorkchopPlot({ data, onSelectPoint }) {
                   border: selectedPoint?.i === i && selectedPoint?.j === j ? '2px solid white' : undefined
                 }}
                 onClick={() => handleCellClick(i, j)}
-                title={`C₃: ${value?.toFixed(2)} km²/s²`}
+                title={value != null ? `C₃: ${value.toFixed(2)} km²/s²` : 'Invalid transfer'}
               />
             ))
           )}
@@ -222,8 +227,8 @@ export default function TrajectoryPlanner({ isOpen, onClose, onLaunchMission }) 
   if (!isOpen) return null;
   
   return (
-    <div className="fixed top-80 right-0 p-8 inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-gray-900 rounded-lg p-6 w-11/12 max-w-6xl max-h-[90vh] overflow-auto">
+    <div className="fixed top-48 left-0 w-40vw p-4 flex items-center justify-center z-50">
+      <div className="bg-gray-900 rounded-lg p-6 max-w-6xl max-h-[90vh] overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-white text-2xl font-bold">Trajectory Planner</h2>
           <button

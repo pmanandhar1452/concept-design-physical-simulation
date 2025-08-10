@@ -3,7 +3,7 @@ Orbital mechanics calculations for the Orbit Engine simulator.
 """
 
 import numpy as np
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 import math
 from datetime import datetime, timedelta
@@ -137,6 +137,28 @@ SOLAR_SYSTEM_BODIES = {
     )
 }
 
+def clean_nan_values(data: Any) -> Any:
+    """
+    Recursively clean NaN values from data structures, replacing them with None.
+    Also converts datetime objects to ISO strings for JSON serialization.
+    """
+    if isinstance(data, dict):
+        return {k: clean_nan_values(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [clean_nan_values(item) for item in data]
+    elif isinstance(data, np.ndarray):
+        return clean_nan_values(data.tolist())
+    elif isinstance(data, (float, np.floating)):
+        if np.isnan(data) or np.isinf(data):
+            return None
+        return float(data)
+    elif isinstance(data, (int, np.integer)):
+        return int(data)
+    elif isinstance(data, datetime):
+        return data.isoformat()
+    else:
+        return data
+
 def kepler_to_cartesian(body: CelestialBody, time: float) -> Tuple[np.ndarray, np.ndarray]:
     """
     Convert Keplerian orbital elements to Cartesian position and velocity.
@@ -179,20 +201,24 @@ def kepler_to_cartesian(body: CelestialBody, time: float) -> Tuple[np.ndarray, n
     vx_orbital = -MU_SUN / h * np.sin(true_anomaly)
     vy_orbital = MU_SUN / h * (body.eccentricity + np.cos(true_anomaly))
     
-    # Rotate to 3D space (simplified - assuming inclination around x-axis)
+    # Rotate to 3D space - orbital plane is x-z (horizontal), y is vertical
     cos_i = np.cos(body.inclination)
     sin_i = np.sin(body.inclination)
     
+    # For horizontal orbits in the x-z plane:
+    # x stays as is
+    # z gets the y_orbital component (horizontal plane)
+    # y gets the inclination component (vertical)
     position = np.array([
         x_orbital,
-        y_orbital * cos_i,
-        y_orbital * sin_i
+        y_orbital * sin_i,  # vertical component (inclination)
+        y_orbital * cos_i   # horizontal component in z-direction
     ])
     
     velocity = np.array([
         vx_orbital,
-        vy_orbital * cos_i,
-        vy_orbital * sin_i
+        vy_orbital * sin_i,  # vertical velocity component
+        vy_orbital * cos_i   # horizontal velocity component in z-direction
     ])
     
     return position, velocity
@@ -259,7 +285,7 @@ def calculate_hohmann_transfer(departure_body: CelestialBody,
     # C3 (characteristic energy)
     c3 = (v_transfer_perihelion - v1)**2
     
-    return {
+    result = {
         'transfer_time': transfer_time,
         'delta_v_total': delta_v_departure + delta_v_arrival,
         'delta_v_departure': delta_v_departure,
@@ -268,6 +294,9 @@ def calculate_hohmann_transfer(departure_body: CelestialBody,
         'c3': c3,
         'semi_major_axis': a_transfer
     }
+    
+    # Clean NaN values before returning
+    return clean_nan_values(result)
 
 def calculate_porkchop_plot(departure_body: str, arrival_body: str,
                            departure_start: datetime, departure_end: datetime,
@@ -324,13 +353,16 @@ def calculate_porkchop_plot(departure_body: str, arrival_body: str,
             delta_v_grid[i, j] = transfer['delta_v_total']
             tof_grid[i, j] = tof / 86400  # Convert to days
     
-    return {
+    result = {
         'departure_dates': [departure_start + timedelta(seconds=t) for t in dep_times],
         'arrival_dates': [arrival_start + timedelta(seconds=t) for t in arr_times],
         'c3': c3_grid.tolist(),
         'delta_v': delta_v_grid.tolist(),
         'time_of_flight': tof_grid.tolist()
     }
+    
+    # Clean NaN values before returning
+    return clean_nan_values(result)
 
 def generate_transfer_trajectory(departure_body: str, arrival_body: str,
                                 departure_time: float, arrival_time: float,

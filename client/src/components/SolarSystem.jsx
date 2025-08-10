@@ -1,7 +1,8 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Stars, Trail, Text, Line } from '@react-three/drei';
+import { OrbitControls, Stars, Trail, Text, Line, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 
 // Planet component
 function Planet({ name, position, radius, color, onClick, isSelected }) {
@@ -19,6 +20,9 @@ function Planet({ name, position, radius, color, onClick, isSelected }) {
 
   const scale = name === 'Sun' ? 1 : (isSelected ? 1.2 : 1);
   
+  // Configure material based on whether this is the Sun or a planet
+  const isSun = name === 'Sun';
+  
   return (
     <group position={position}>
       <mesh
@@ -27,27 +31,70 @@ function Planet({ name, position, radius, color, onClick, isSelected }) {
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         scale={scale}
+        castShadow={!isSun}
+        receiveShadow={!isSun}
       >
-        <sphereGeometry args={[radius, 32, 32]} />
-        <meshStandardMaterial
-          color={color}
-          emissive={name === 'Sun' ? color : '#000000'}
-          emissiveIntensity={name === 'Sun' ? 0.5 : 0}
-        />
+        <sphereGeometry args={[radius, 64, 64]} />
+        {isSun ? (
+          // Sun uses emissive material to glow
+          <meshBasicMaterial
+            color={color}
+          />
+        ) : (
+          // Planets use standard material to receive light with slight emission for visibility
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={0.2}
+            metalness={0.3}
+            roughness={0.6}
+          />
+        )}
       </mesh>
       
-      {/* Planet label */}
-      {(hovered || isSelected) && (
+      {/* Add a glow effect for the Sun */}
+      {isSun && (
+        <>
+          {/* Inner glow */}
+          <mesh scale={1.2}>
+            <sphereGeometry args={[radius, 32, 32]} />
+            <meshBasicMaterial
+              color={color}
+              transparent
+              opacity={0.3}
+              side={THREE.BackSide}
+            />
+          </mesh>
+          {/* Outer glow */}
+          <mesh scale={1.5}>
+            <sphereGeometry args={[radius, 32, 32]} />
+            <meshBasicMaterial
+              color={color}
+              transparent
+              opacity={0.1}
+              side={THREE.BackSide}
+            />
+          </mesh>
+        </>
+      )}
+      
+      {/* Planet label - always visible and facing camera */}
+      <Billboard
+        follow={true}
+        lockX={false}
+        lockY={false}
+        lockZ={false}
+        position={[0, radius * 2, 0]}
+      >
         <Text
-          position={[0, radius * 1.5, 0]}
-          fontSize={0.2}
+          fontSize={0.15}
           color="white"
           anchorX="center"
           anchorY="middle"
         >
           {name}
         </Text>
-      )}
+      </Billboard>
     </group>
   );
 }
@@ -100,7 +147,7 @@ function Spacecraft({ position, trail = [] }) {
           color="#00ff00"
           attenuation={(t) => t * t}
         >
-          <mesh ref={meshRef}>
+          <mesh ref={meshRef} castShadow>
             <coneGeometry args={[0.02, 0.04, 4]} />
             <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={0.5} />
           </mesh>
@@ -108,7 +155,7 @@ function Spacecraft({ position, trail = [] }) {
       )}
       
       {/* Spacecraft mesh */}
-      <mesh ref={meshRef}>
+      <mesh ref={meshRef} castShadow>
         <coneGeometry args={[0.02, 0.04, 4]} />
         <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={0.5} />
       </mesh>
@@ -151,6 +198,19 @@ export default function SolarSystem({ bodies, missions, onBodyClick, selectedBod
     'Neptune': 0.3
   };
 
+  // Brighter, more vibrant colors for planets
+  const planetColors = {
+    'Sun': '#FFD700',      // Bright gold
+    'Mercury': '#E5E5E5',  // Bright silver/gray
+    'Venus': '#FFD580',    // Bright peach/orange
+    'Earth': '#4D94FF',    // Bright blue
+    'Mars': '#FF6B6B',     // Bright red
+    'Jupiter': '#FFB366',  // Bright orange-tan
+    'Saturn': '#FFEB99',   // Bright pale yellow
+    'Uranus': '#66FFE6',   // Bright cyan
+    'Neptune': '#6B8FFF'   // Bright deep blue
+  };
+
   useEffect(() => {
     if (selectedBody && bodies[selectedBody]) {
       const pos = bodies[selectedBody].position;
@@ -162,13 +222,43 @@ export default function SolarSystem({ bodies, missions, onBodyClick, selectedBod
     <Canvas
       camera={{ position: [30, 30, 30], fov: 60 }}
       style={{ background: '#000000' }}
+      shadows
     >
-      {/* Lighting */}
-      <ambientLight intensity={0.1} />
-      <pointLight position={[0, 0, 0]} intensity={2} />
+      {/* Lighting setup for realistic solar system */}
+      {/* Very dim ambient light - just enough to see planet outlines */}
+      <ambientLight intensity={0.02} />
+      
+      {/* Primary sun light - strong point light at sun position */}
+      <pointLight 
+        position={[0, 0, 0]} 
+        intensity={3} 
+        color="#FDB813"
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={500}
+        shadow-camera-near={0.5}
+      />
+      
+      {/* Secondary sun light for better illumination */}
+      <pointLight 
+        position={[0, 0, 0]} 
+        intensity={1} 
+        color="#FFFFFF"
+        distance={100}
+      />
       
       {/* Stars background */}
       <Stars radius={300} depth={50} count={5000} factor={4} saturation={0} fade />
+
+      <EffectComposer>
+          <Bloom 
+            intensity={0.9} 
+            luminanceThreshold={0.4} 
+            luminanceSmoothing={0} 
+            toneMapped={false} 
+          />
+        </EffectComposer>
       
       {/* Camera controls */}
       <CameraController focusTarget={focusTarget} />
@@ -196,7 +286,7 @@ export default function SolarSystem({ bodies, missions, onBodyClick, selectedBod
               name={body.name}
               position={position}
               radius={radiusScale[body.name] || 0.1}
-              color={body.color}
+              color={planetColors[body.name] || body.color}
               onClick={onBodyClick}
               isSelected={selectedBody === key}
             />

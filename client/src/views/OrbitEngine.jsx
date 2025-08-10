@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import InfoPanel from '../components/InfoPanel';
 
+import InfoPanel from '../components/InfoPanel';
+import DebugConsole from '../components/DebugConsole';
 import SolarSystem from '../components/SolarSystem';
 import TrajectoryPlanner from '../components/TrajectoryPlanner';
 import { 
@@ -20,7 +21,7 @@ export default function OrbitEngine() {
     bodies: {},
     missions: [],
     time_scale: 1,
-    is_playing: false
+    is_playing: true
   });
   
   const [selectedBody, setSelectedBody] = useState(null);
@@ -48,6 +49,10 @@ export default function OrbitEngine() {
     ws.onopen = () => {
       console.log('Connected to Orbit Engine');
       setIsConnected(true);
+      // Start the simulation automatically when connected
+      ws.send(JSON.stringify({ type: 'control', action: 'play' }));
+      // Set a reasonable default speed (1000x) so planets visibly move
+      ws.send(JSON.stringify({ type: 'control', action: 'set_speed', speed: 1000 }));
       // Note: The server will send a "WebSocket connected successfully" status message
     };
     
@@ -146,9 +151,9 @@ export default function OrbitEngine() {
   return (
     <div className="h-screen bg-black flex flex-col">
       {/* Header */}
-      <div className="px-4 py-2">
+      <div className="fixed top-0 left-0 w-full px-4 py-2 z-50">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 gap-4 px-8">
+          <div className="flex items-center space-x-4 gap-4">
             <h1 className="text-white text-2xl font-bold">Orbit Engine</h1>
             <span className={`px-2 py-1 rounded text-xs ${
               isConnected ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
@@ -179,7 +184,7 @@ export default function OrbitEngine() {
           />
           
           {/* Overlaid simulation info */}
-          <div className="absolute top-4 left-4">
+          <div className="fixed top-20 left-4">
             <SimulationInfo
               timestamp={simulationState.timestamp}
               realTime={simulationState.real_timestamp}
@@ -188,7 +193,7 @@ export default function OrbitEngine() {
         </div>
         
         {/* Side panel */}
-        <div className="w-96 bg-transparentp-4 space-y-4 overflow-y-auto">
+        <div className="fixed top-20 right-0 w-96 bg-transparentp-4 space-y-4 overflow-y-auto">
           <TimeControls
             isPlaying={simulationState.is_playing}
             timeScale={simulationState.time_scale}
@@ -217,7 +222,10 @@ export default function OrbitEngine() {
         onLaunchMission={handleLaunchMission}
       />
 
-      <InfoPanel logs={logs} />
+      {/* Debug Console for status messages */}
+      <div className="fixed bottom-4 right-4 w-96 z-50">
+        <DebugConsole logs={logs} />
+      </div>
     </div>
   );
 }
