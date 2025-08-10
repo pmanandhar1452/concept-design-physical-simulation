@@ -228,7 +228,7 @@ export default function TrajectoryPlanner({ isOpen, onClose, onLaunchMission }) 
   
   return (
     <div className="fixed top-48 left-0 w-40vw p-4 flex items-center justify-center z-50">
-      <div className="bg-gray-900 rounded-lg p-6 max-w-6xl max-h-[90vh] overflow-auto">
+      <div className="bg-gray-900 rounded-lg p-6 max-w-6xl h-90vh overflow-y-scroll">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-white text-2xl font-bold">Trajectory Planner</h2>
           <button

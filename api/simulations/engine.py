@@ -5,6 +5,8 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 from datetime import datetime, timedelta
 import time
+import json
+import os
 
 from .orbital_mechanics import (
     CelestialBody, SOLAR_SYSTEM_BODIES,
@@ -49,6 +51,15 @@ class SimulationEngine:
         self.time_scale = 1.0  # Default 1x speed
         self.is_playing = False
         
+        # Position logging
+        self.position_log = []  # Buffer for position data
+        self.timestep_counter = 0  # Counter for timesteps
+        self.log_file_counter = 0  # Counter for log file numbering
+        self.log_directory = "simulation_logs"  # Directory to save logs
+        
+        # Create log directory if it doesn't exist
+        os.makedirs(self.log_directory, exist_ok=True)
+        
     async def initialize(self):
         """Initialize the solar system simulation."""
         # Initialize celestial bodies
@@ -83,6 +94,33 @@ class SimulationEngine:
             is_playing=self.is_playing
         )
         
+    def save_position_log(self):
+        """Save the position log to a file."""
+        if not self.position_log:
+            return
+        
+        # Generate filename with counter
+        filename = f"{self.log_directory}/celestial_positions_{self.log_file_counter:04d}.json"
+        
+        # Save to JSON file
+        with open(filename, 'w') as f:
+            json.dump({
+                "metadata": {
+                    "total_timesteps": len(self.position_log),
+                    "start_time": self.position_log[0]["timestamp"] if self.position_log else 0,
+                    "end_time": self.position_log[-1]["timestamp"] if self.position_log else 0,
+                    "epoch": self.epoch.isoformat(),
+                    "file_number": self.log_file_counter
+                },
+                "data": self.position_log
+            }, f, indent=2)
+        
+        print(f"Saved {len(self.position_log)} timesteps to {filename}")
+        
+        # Clear the log buffer and increment counter
+        self.position_log = []
+        self.log_file_counter += 1
+    
     async def step(self, dt: float = None) -> SimulationState:
         """Execute one simulation step."""
         if not self.current_state:
@@ -96,6 +134,15 @@ class SimulationEngine:
             # Update simulation time
             self.current_state.timestamp += dt
             
+            # Log current positions before updating
+            timestep_data = {
+                "timestep": self.timestep_counter,
+                "timestamp": self.current_state.timestamp,
+                "real_time": datetime.now().isoformat(),
+                "time_scale": self.time_scale,
+                "bodies": {}
+            }
+            
             # Update celestial body positions
             for name, body in self.bodies.items():
                 if name != 'sun':  # Sun stays at origin
@@ -107,6 +154,21 @@ class SimulationEngine:
                     # Update state dict (convert to AU for frontend)
                     self.current_state.bodies[name]["position"] = (pos / 1.496e11).tolist()
                     self.current_state.bodies[name]["velocity"] = vel.tolist()
+                
+                # Log position data for all bodies (including sun)
+                timestep_data["bodies"][name] = {
+                    "position_m": body.position.tolist(),  # Position in meters
+                    "position_au": (body.position / 1.496e11).tolist(),  # Position in AU
+                    "velocity_ms": body.velocity.tolist()  # Velocity in m/s
+                }
+            
+            # Add timestep data to log
+            self.position_log.append(timestep_data)
+            self.timestep_counter += 1
+            
+            # Save to file every 10000 timesteps
+            if self.timestep_counter % 10000 == 0 and self.timestep_counter > 0:
+                self.save_position_log()
             
             # Update active missions
             for mission in self.active_missions:
@@ -154,6 +216,11 @@ class SimulationEngine:
         """Stop the simulation."""
         self.is_running = False
         self.is_playing = False
+        
+        # Save any remaining logged data
+        if self.position_log:
+            print(f"Saving final {len(self.position_log)} timesteps before stopping...")
+            self.save_position_log()
     
     def get_state(self) -> Optional[SimulationState]:
         """Get current simulation state."""
