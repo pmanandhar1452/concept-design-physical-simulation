@@ -190,6 +190,12 @@ async def websocket_endpoint(websocket: WebSocket):
     logger.info(f"Client connected. Active connections: {len(active_connections)}")
     
     try:
+        # Send connection confirmation message for debug console
+        await websocket.send_json({
+            "type": "status",
+            "message": "WebSocket connected successfully"
+        })
+        
         # Send initial state
         if simulation_engine:
             state = simulation_engine.get_state()

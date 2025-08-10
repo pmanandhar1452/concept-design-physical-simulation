@@ -53,7 +53,7 @@ function Planet({ name, position, radius, color, onClick, isSelected }) {
 }
 
 // Orbit ring component
-function OrbitRing({ radius, color = '#444444' }) {
+function OrbitRing({ radius, color = '#ffffff' }) {
   const points = useMemo(() => {
     const pts = [];
     for (let i = 0; i <= 64; i++) {
@@ -187,7 +187,7 @@ export default function SolarSystem({ bodies, missions, onBodyClick, selectedBod
             {key !== 'sun' && (
               <OrbitRing
                 radius={Math.sqrt(position[0] ** 2 + position[2] ** 2)}
-                color="#333333"
+                color="#ffffff"
               />
             )}
             

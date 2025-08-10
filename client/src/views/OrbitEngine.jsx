@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+
+import InfoPanel from '../components/InfoPanel';
+
 import SolarSystem from '../components/SolarSystem';
 import TrajectoryPlanner from '../components/TrajectoryPlanner';
 import { 
@@ -7,6 +10,7 @@ import {
   MissionPanel, 
   SimulationInfo 
 } from '../components/ControlPanel';
+
 
 export default function OrbitEngine() {
   // State management
@@ -23,6 +27,7 @@ export default function OrbitEngine() {
   const [bodyInfo, setBodyInfo] = useState(null);
   const [showPlanner, setShowPlanner] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [logs, setLogs] = useState([]);
   
   const wsRef = useRef(null);
   
@@ -43,6 +48,7 @@ export default function OrbitEngine() {
     ws.onopen = () => {
       console.log('Connected to Orbit Engine');
       setIsConnected(true);
+      // Note: The server will send a "WebSocket connected successfully" status message
     };
     
     ws.onmessage = (event) => {
@@ -55,6 +61,8 @@ export default function OrbitEngine() {
           setBodyInfo(message.data);
         } else if (message.type === 'status') {
           console.log('Status:', message.message);
+          // Add status message to logs for debug console
+          setLogs(prev => [...prev.slice(-49), { type: 'status', message: message.message }]);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -68,6 +76,7 @@ export default function OrbitEngine() {
     ws.onclose = () => {
       console.log('Disconnected from Orbit Engine');
       setIsConnected(false);
+      setLogs(prev => [...prev.slice(-49), { type: 'error', message: 'WebSocket disconnected - reconnecting in 3s...' }]);
       // Attempt to reconnect after 3 seconds
       setTimeout(connectWebSocket, 3000);
     };
@@ -137,9 +146,9 @@ export default function OrbitEngine() {
   return (
     <div className="h-screen bg-black flex flex-col">
       {/* Header */}
-      <div className="bg-gray-900 border-b border-gray-700 px-4 py-2">
+      <div className="px-4 py-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 gap-4 px-8">
             <h1 className="text-white text-2xl font-bold">Orbit Engine</h1>
             <span className={`px-2 py-1 rounded text-xs ${
               isConnected ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
@@ -160,7 +169,7 @@ export default function OrbitEngine() {
       {/* Main content */}
       <div className="flex-1 flex">
         {/* 3D View */}
-        <div className="flex-1 relative">
+        <div className="fixed top-0 left-0 w-full h-full">
           <SolarSystem
             bodies={simulationState.bodies}
             missions={simulationState.missions}
@@ -179,7 +188,7 @@ export default function OrbitEngine() {
         </div>
         
         {/* Side panel */}
-        <div className="w-96 bg-gray-900 border-l border-gray-700 p-4 space-y-4 overflow-y-auto">
+        <div className="w-96 bg-transparentp-4 space-y-4 overflow-y-auto">
           <TimeControls
             isPlaying={simulationState.is_playing}
             timeScale={simulationState.time_scale}
@@ -207,6 +216,8 @@ export default function OrbitEngine() {
         onClose={() => setShowPlanner(false)}
         onLaunchMission={handleLaunchMission}
       />
+
+      <InfoPanel logs={logs} />
     </div>
   );
 }

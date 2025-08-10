@@ -222,7 +222,7 @@ export default function TrajectoryPlanner({ isOpen, onClose, onLaunchMission }) 
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+    <div className="fixed top-80 right-0 p-8 inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-gray-900 rounded-lg p-6 w-11/12 max-w-6xl max-h-[90vh] overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-white text-2xl font-bold">Trajectory Planner</h2>
