@@ -32,7 +32,7 @@ A real-time solar system simulator with interplanetary trajectory planning capab
 cd api
 uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -r requirements.txt
+uv sync 
 ```
 
 ### Frontend Setup
